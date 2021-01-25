@@ -12,7 +12,9 @@ The following folder includes the necessary files for the modules of the embedde
  
 # File Naming Conventions 
   1. Code <br/>
-     a. module testing 
+     a. module testing <br/> 
+        1. arduino
+        2. Tiva 
      b. module code 
   2. Flowchart <br/>
   3. Schematic <br/>
