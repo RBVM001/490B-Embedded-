@@ -11,4 +11,10 @@ The following folder includes the necessary files for the modules of the embedde
  7. Readme.md 
  
 # File Naming Conventions 
- 
+  1. Code <br/>
+     a. module testing 
+     b. module code 
+  2. Flowchart <br/>
+  3. Schematic <br/>
+  4. Gerber File folder 
+  5. Readme.md 
