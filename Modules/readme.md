@@ -1,4 +1,4 @@
-# MODULE folder
+# MODULE FOLDER
 The following folder includes the necessary files for the modules of the embedded systems portion. 
 # What to include in each folder? 
  1. The code <br/>
