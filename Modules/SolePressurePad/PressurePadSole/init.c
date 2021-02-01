@@ -22,6 +22,7 @@ void UART0_TX( char c );
 char columns [5] = {CS0,CS1,CS2,CS3,CSZ};
 char rows [5] = {RS0, RS1, RS2, RS3, RSZ};
 
+const char msg_minimumValue[] = "Minimum Value: ";
 //Status and Column pins default for arduino mini pro 
 #define statusPin 0x04 // PB2
 #define colPin  0x08   // PB3
@@ -45,6 +46,14 @@ const bool muxChannel[16][4]={
     {1,1,1,1}  //channel 15
   };
 
+//incoming serial byte
+int inByte = 0;
+
+int valor = 0;               //variable for sending bytes to processing
+int calibra[15][15];         //Calibration array for the min values of each of the 225 sensors.
+int minsensor= 254;          //Variable for staring the min array
+int multiplier = 254;
+int pastmatrix[15][15];
 	
 void initRows(){volatile unsigned long delay;
 //PD1 - Z,PE0 - S3,PE1 - S2,PE2 - S1,PE3 - S0
@@ -65,6 +74,27 @@ void initRows(){volatile unsigned long delay;
   GPIO_PORTD_DIR_R |= 0x02;             // 5) PD1 output   
   GPIO_PORTD_AFSEL_R &= ~(0x02);        // 6) no alternate function      
   GPIO_PORTD_DEN_R |= 0x02;            // 7) enable digital pins PD1
+	
+//	SYSCTL_RCGCADC_R |= 0x02;
+//  SYSCTL_RCGC2_R |= 0x00000010;   							// 1) activate clock for Port D
+//  delay = SYSCTL_RCGC2_R;         							//  delay
+//  GPIO_PORTD_DIR_R &= ~0x06;      							// 2) make PE1,PE2 input
+//  GPIO_PORTD_AFSEL_R |= 0x06;    								// 3) enable alternate function on PD1
+//  GPIO_PORTD_DEN_R &= ~0x06;      							// 4) disable digital I/O on PD1
+//  GPIO_PORTD_AMSEL_R |= 0x06;     							// 5) enable analog function on PD1
+//  SYSCTL_RCGC0_R |= 0x00020000;   							// 6) enable ADC1 (pg 458)
+//  delay = SYSCTL_RCGC2_R;         
+//  SYSCTL_RCGC0_R &= ~0x00000300;  							// 7) configure for 125K  (pg458)
+//  ADC1_SSPRI_R = 0x0123;          							// 8) Sequencer 2 is highest priority (pg841)
+//																								//  [3:0] - disable(0) enable(1) ASEN0-ASEN3
+//  ADC1_EMUX_R |= 0x0F00;         							// 9) seq2 is always (continuosly sampling) (pg 833)
+//																								// [15:12]- seq3, [11:8] - seq2, [7:4]-seq1, [3:0] - seq0
+//  ADC1_SSMUX2_R |= 	0x0000021;									// 10) channel Ain2 (PE1, 2)  Ain1 (PE2, 1) pg801, pg875
+//  ADC1_SSCTL2_R |= 0x0060;         						  // 11) disable TS0 D0, enable IE0 END0, pg876
+//  ADC1_ACTSS_R |= 0x0004;         							// 12) enable sample sequencer 2 (pg821)
+//	ADC1_IM_R = 0x00000004;  											// enable interrupt ss2, pg825
+//	NVIC_PRI4_R = ( NVIC_PRI4_R & 0xFFFF0FFF ) | 0x00002000;	// Set interrupt priority to 1
+//	NVIC_EN1_R          |=  0x00040000;           // pg 104, 134, 142	
 
 
 }
@@ -82,26 +112,84 @@ void initColumns(){volatile unsigned long delay;
 	
 }
 
-void initWrite(){
+void setup(){
 	//Clear MUX data pins 
-	int i;
+	int i,j,k;
 	for ( i = 0; i < 4; i++){
 		GPIO_PORTB_DATA_R &= ~columns[i];
 		GPIO_PORTE_DATA_R &= ~rows[i];
 	}
-	//Set MUX data pins to 1 
+	//Set MUX data pins to 1 	
+	GPIO_PORTB_DATA_R |= columns[4];
 	GPIO_PORTB_DATA_R |= statusPin;
 	GPIO_PORTB_DATA_R |= colPin;
-	GPIO_PORTB_DATA_R |= columns[4];
+
 	
 	//Serial.begin(115200);
   
   //Serial.println("\n\Calibrating...\n");
 
+ // Full of 0's of initial matrix
+  for(j = 0; j < 15; j ++){ 
+    writeMux(j);
+    for(i = 0; i < 15; i ++)
+      calibra[j][i] = 0;
+  }
+  
+  // Calibration
+  for(k = 0; k < 50; k++){  
+    for(j = 0; j < 15; j ++){ 
+      writeMux(j);
+      for(i = 0; i < 15; i ++)
+        calibra[j][i] = calibra[j][i] + readMux(i);
+    }
+  }
 	
+//Print averages
+  for(j = 0; j < 15; j ++){ 
+    writeMux(j);
+    for(i = 0; i < 15; i ++){
+      calibra[j][i] = calibra[j][i]/50;
+      if(calibra[j][i] < minsensor)
+        minsensor = calibra[j][i];
+				UART0_TX( '0' );
+				UART0_TX( '\t' );
+    }
+  UART0_TX( '\n' );
+  }
+  
+	UART0_TX( '\n' );
+	UART0_TX( '\n' );
+	UART0_SendString( msg_minimumValue );
+	UART0_TX( minsensor );
+  UART0_TX( '\n' );
+	establishContact();
+	GPIO_PORTB_DATA_R &= ~colPin;
 }
-void writeMux(){
-	//initColumns();
+
+int readMux (char channel) {
+	int i, val; 
+	//improve on 
+	  for ( i = 0; i < 4; i++){
+		if (muxChannel[channel][i] == 0)
+			GPIO_PORTE_DATA_R &= ~rows[i];
+		else 
+			GPIO_PORTE_DATA_R |= rows[i];
+	}
+  //read the value at the SIG pin
+	val = 0;
+
+	return val; 
+}
+void writeMux(char channel){
+	int i;
+	//improve on 
+	  for ( i = 0; i < 4; i++){
+		if (muxChannel[channel][i] == 0)
+			GPIO_PORTB_DATA_R &= ~columns[i];
+		else 
+			GPIO_PORTB_DATA_R |= columns[i];
+	}
 }
 
 void initUART(){
@@ -124,8 +212,8 @@ void initUART(){
 	SYSCTL_RCGCUART_R |= 0x01;		// enable clock to UART0
 	herf = SYSCTL_RCGCGPIO_R;
 	UART0_CTL_R = 0;							// disable UART0
-	UART0_IBRD_R = 8;						// 9600 baud integer portion
-	UART0_FBRD_R = 44;						// 9600 baud fraction portion
+	UART0_IBRD_R = 8;						// 115,200 baud integer portion
+	UART0_FBRD_R = 44;						// 115,200 baud fraction portion
 	UART0_CC_R = 0;								// UART0 timed using System clock
 	UART0_LCRH_R = 0x60;					// 8-bit, no parity, 1-stop, no FIFO
 	UART0_IM_R |= 0x0010;					// enable TX, RX interrupt
@@ -164,18 +252,75 @@ void UART0_TX( char c ){
 }
 
 void whileUART(){
-			if( rx_data_flag ){	
-			GPIO_PORTF_DATA_R = (rx_data_byte << 1) & 0x0E;
-			rx_data_flag = 0;
-			// echo back received data
-		//	UART0_TX( rx_data_byte );
-				UART0_TX( '1' );
-		}
+//			if( rx_data_flag ){	
+//			GPIO_PORTF_DATA_R = (rx_data_byte << 1) & 0x0E;
+//			rx_data_flag = 0;
+//			// echo back received data
+//		//	UART0_TX( rx_data_byte );
+//				UART0_TX( '1' );
+		//}
+	//UART0_TX( '1' );
+	
+//Loop through and read all 16 values
+  //Reports back Value at channel 6 is: 346
+	int i, j, limsup;
+  if (rx_data_byte > 0){
+    inByte = rx_data_byte;
+    
+    if(inByte == 'A'){
+    
+      for( j = 14; j >= 0; j--){ 
+        writeMux(j);
+        
+        for( i = 0; i < 15; i++){
+            
+          valor = readMux(i);
+          
+          //Saturation sensors
+           limsup = 450;
+          if(valor > limsup)
+            valor = limsup;
+            
+          if(valor < calibra[j][i])
+            valor = calibra[j][i];  
+          
+          valor = 0;//map(valor,minsensor, limsup,1,254); //will always send 0 to processing
+          
+          if(valor < 150)
+            valor = 0;
+          if(valor > 254)
+            valor = 254;
+          
+          UART0_TX(valor);
+					if ((GPIO_PORTB_DATA_R & colPin) == 0x08)
+						GPIO_PORTB_DATA_R &= ~colPin;
+					else 
+						GPIO_PORTB_DATA_R |= colPin;
+          //digitalWrite(COL_pin,!digitalRead(COL_pin));
+					
+        } 
+      }
+    }
+        
+  }
 }
 
+void DelayH(int d){unsigned long volatile time;    
+  time = 727240*200/91;  // .1s or 100ms
+  while(d*time){
+		time--;
+  }
+}
+
+void establishContact(){
+	while ( rx_data_byte <= 0) { //no data
+    UART0_TX('A');   // send a capital A
+    DelayH(3);
+  }
+}
 
 void initSole(){
 	initColumns();
 	initRows();
-	initWrite(); 
+	setup(); 
 }
