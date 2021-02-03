@@ -112,11 +112,6 @@ void setup(){
 	GPIO_PORTB_DATA_R |= statusPin;
 	GPIO_PORTB_DATA_R |= colPin;
 
-	
-	//Serial.begin(115200);
-  
-  //Serial.println("\n\Calibrating...\n");
-
  // Full of 0's of initial matrix
   for(j = 0; j < 15; j ++){ 
     writeMux(j);
@@ -263,7 +258,7 @@ void whileUART(){
           valor = readMux(i);
           
           //Saturation sensors
-           limsup = 450;
+           limsup = 2000;
           if(valor > limsup)
             valor = limsup;
             
