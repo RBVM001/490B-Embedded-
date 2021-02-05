@@ -11,11 +11,11 @@ void UART0_TX( char c );
 #define RS1 0x04 //S1 - PE2
 #define RS2 0x02 //S2 - PE1
 #define RS3 0x01 //S3 - PE0
-#define RSZ 0x02 //Z  - PD1
+#define RSZ 0x10 //Z  - PE4
 
-#define CS0 0x80 //S0 - PB6
-#define CS1 0x40 //S1 - PB5 
-#define CS2 0x20 //S2 - PB4
+#define CS0 0x40 //S0 - PB6
+#define CS1 0x20 //S1 - PB5 
+#define CS2 0x10 //S2 - PB4
 #define CS3 0x02 //S3 - PB1 
 #define CSZ 0x01 //Z  - PB0
 
@@ -66,35 +66,25 @@ void initRows(){volatile unsigned long delay;
   GPIO_PORTE_AFSEL_R &= ~(0x0F);        // 6) no alternate function      
   GPIO_PORTE_DEN_R |= 0x0F;            // 7) enable digital pins PE0-PE3
 	
-	SYSCTL_RCGC2_R |= 0x00000008;     // 1) D
-  delay = SYSCTL_RCGC2_R;           // delay   
-  GPIO_PORTD_CR_R |= 0x02;           // allow changes to PD1
-  GPIO_PORTD_AMSEL_R &= ~(0x02);        // 3) disable analog function
-  GPIO_PORTD_PCTL_R &= ~(0x00000010);   // 4) GPIO clear bit PCTL  
-  GPIO_PORTD_DIR_R |= 0x02;             // 5) PD1 output   
-  GPIO_PORTD_AFSEL_R &= ~(0x02);        // 6) no alternate function      
-  GPIO_PORTD_DEN_R |= 0x02;            // 7) enable digital pins PD1
-	
-//	SYSCTL_RCGCADC_R |= 0x02;
-//  SYSCTL_RCGC2_R |= 0x00000010;   							// 1) activate clock for Port D
-//  delay = SYSCTL_RCGC2_R;         							//  delay
-//  GPIO_PORTD_DIR_R &= ~0x06;      							// 2) make PE1,PE2 input
-//  GPIO_PORTD_AFSEL_R |= 0x06;    								// 3) enable alternate function on PD1
-//  GPIO_PORTD_DEN_R &= ~0x06;      							// 4) disable digital I/O on PD1
-//  GPIO_PORTD_AMSEL_R |= 0x06;     							// 5) enable analog function on PD1
-//  SYSCTL_RCGC0_R |= 0x00020000;   							// 6) enable ADC1 (pg 458)
-//  delay = SYSCTL_RCGC2_R;         
-//  SYSCTL_RCGC0_R &= ~0x00000300;  							// 7) configure for 125K  (pg458)
-//  ADC1_SSPRI_R = 0x0123;          							// 8) Sequencer 2 is highest priority (pg841)
-//																								//  [3:0] - disable(0) enable(1) ASEN0-ASEN3
-//  ADC1_EMUX_R |= 0x0F00;         							// 9) seq2 is always (continuosly sampling) (pg 833)
-//																								// [15:12]- seq3, [11:8] - seq2, [7:4]-seq1, [3:0] - seq0
-//  ADC1_SSMUX2_R |= 	0x0000021;									// 10) channel Ain2 (PE1, 2)  Ain1 (PE2, 1) pg801, pg875
-//  ADC1_SSCTL2_R |= 0x0060;         						  // 11) disable TS0 D0, enable IE0 END0, pg876
-//  ADC1_ACTSS_R |= 0x0004;         							// 12) enable sample sequencer 2 (pg821)
-//	ADC1_IM_R = 0x00000004;  											// enable interrupt ss2, pg825
-//	NVIC_PRI4_R = ( NVIC_PRI4_R & 0xFFFF0FFF ) | 0x00002000;	// Set interrupt priority to 1
-//	NVIC_EN1_R          |=  0x00040000;           // pg 104, 134, 142	
+
+  SYSCTL_RCGCADC_R |= 0x0001;   // 1) activate ADC0
+  SYSCTL_RCGCGPIO_R |= 0x10;    // 2) activate clock for Port E
+  while((SYSCTL_PRGPIO_R&0x10) != 0x10){};  // 3 for stabilization
+  GPIO_PORTE_DIR_R &= ~0x10;    // 4) make PE4 input
+  GPIO_PORTE_AFSEL_R |= 0x10;   // 5) enable alternate function on PE4
+  GPIO_PORTE_DEN_R &= ~0x10;    // 6) disable digital I/O on PE4
+  GPIO_PORTE_AMSEL_R |= 0x10;   // 7) enable analog functionality on PE4
+// while((SYSCTL_PRADC_R&0x0001) != 0x0001){}; // good code, but not implemented in simulator
+  ADC0_PC_R &= ~0xF;
+  ADC0_PC_R |= 0x1;             // 8) configure for 125K samples/sec
+  ADC0_SSPRI_R = 0x0123;        // 9) Sequencer 3 is highest priority
+  ADC0_ACTSS_R &= ~0x0008;      // 10) disable sample sequencer 3
+  ADC0_EMUX_R &= ~0xF000;       // 11) seq3 is software trigger
+  ADC0_SSMUX3_R &= ~0x000F;
+  ADC0_SSMUX3_R += 9;           // 12) set channel
+  ADC0_SSCTL3_R = 0x0006;       // 13) no TS0 D0, yes IE0 END0
+  ADC0_IM_R &= ~0x0008;         // 14) disable SS3 interrupts
+  ADC0_ACTSS_R |= 0x0008;       // 15) enable sample sequencer 3
 
 
 }
@@ -124,10 +114,6 @@ void setup(){
 	GPIO_PORTB_DATA_R |= statusPin;
 	GPIO_PORTB_DATA_R |= colPin;
 
-	
-	//Serial.begin(115200);
-  
-  //Serial.println("\n\Calibrating...\n");
 
  // Full of 0's of initial matrix
   for(j = 0; j < 15; j ++){ 
@@ -176,8 +162,8 @@ int readMux (char channel) {
 		else 
 			GPIO_PORTE_DATA_R |= rows[i];
 	}
-  //read the value at the SIG pin
-	val = 0;
+	val = ADC0_InSeq3();
+
 
 	return val; 
 }
@@ -273,19 +259,20 @@ void whileUART(){
         writeMux(j);
         
         for( i = 0; i < 15; i++){
-            
+
           valor = readMux(i);
           
           //Saturation sensors
-           limsup = 450;
+           limsup = 2000;
+
           if(valor > limsup)
             valor = limsup;
             
           if(valor < calibra[j][i])
             valor = calibra[j][i];  
-          
-          valor = 0;//map(valor,minsensor, limsup,1,254); //will always send 0 to processing
-          
+
+					valor = map(valor,minsensor, limsup,1,254); 
+
           if(valor < 150)
             valor = 0;
           if(valor > 254)
@@ -318,6 +305,25 @@ void establishContact(){
     DelayH(3);
   }
 }
+
+
+uint32_t ADC0_InSeq3(void){  uint32_t result;
+
+  ADC0_PSSI_R = 0x0008;            // 1) initiate SS3
+
+  while((ADC0_RIS_R&0x08)==0){};   // 2) wait for conversion done
+
+  result = ADC0_SSFIFO3_R&0xFFF;   // 3) read result
+
+  ADC0_ISC_R = 0x0008;             // 4) acknowledge completion
+
+  return result;
+}
+long map (long valor, long minsensor, long limsup, long out_min, long out_max) {
+	return (valor - minsensor) * (out_max - out_min) / (limsup - minsensor) + out_min;
+}
+
+	
 
 void initSole(){
 	initColumns();
