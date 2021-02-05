@@ -66,6 +66,7 @@ void initRows(){volatile unsigned long delay;
   GPIO_PORTE_AFSEL_R &= ~(0x0F);        // 6) no alternate function      
   GPIO_PORTE_DEN_R |= 0x0F;            // 7) enable digital pins PE0-PE3
 	
+
   SYSCTL_RCGCADC_R |= 0x0001;   // 1) activate ADC0
   SYSCTL_RCGCGPIO_R |= 0x10;    // 2) activate clock for Port E
   while((SYSCTL_PRGPIO_R&0x10) != 0x10){};  // 3 for stabilization
@@ -84,6 +85,7 @@ void initRows(){volatile unsigned long delay;
   ADC0_SSCTL3_R = 0x0006;       // 13) no TS0 D0, yes IE0 END0
   ADC0_IM_R &= ~0x0008;         // 14) disable SS3 interrupts
   ADC0_ACTSS_R |= 0x0008;       // 15) enable sample sequencer 3
+
 
 }
 	
@@ -111,6 +113,7 @@ void setup(){
 	GPIO_PORTB_DATA_R |= columns[4];
 	GPIO_PORTB_DATA_R |= statusPin;
 	GPIO_PORTB_DATA_R |= colPin;
+
 
  // Full of 0's of initial matrix
   for(j = 0; j < 15; j ++){ 
@@ -159,8 +162,9 @@ int readMux (char channel) {
 		else 
 			GPIO_PORTE_DATA_R |= rows[i];
 	}
- 
 	val = ADC0_InSeq3();
+
+
 	return val; 
 }
 void writeMux(char channel){
@@ -255,24 +259,25 @@ void whileUART(){
         writeMux(j);
         
         for( i = 0; i < 15; i++){
+
           valor = readMux(i);
           
           //Saturation sensors
            limsup = 2000;
+
           if(valor > limsup)
             valor = limsup;
             
           if(valor < calibra[j][i])
             valor = calibra[j][i];  
-          
-					valor = map(valor,minsensor, limsup,1,254);
-//          
+
+					valor = map(valor,minsensor, limsup,1,254); 
+
           if(valor < 150)
             valor = 0;
           if(valor > 254)
             valor = 254;
           
-					
           UART0_TX(valor);
 					if ((GPIO_PORTB_DATA_R & colPin) == 0x08)
 						GPIO_PORTB_DATA_R &= ~colPin;
@@ -301,6 +306,7 @@ void establishContact(){
   }
 }
 
+
 uint32_t ADC0_InSeq3(void){  uint32_t result;
 
   ADC0_PSSI_R = 0x0008;            // 1) initiate SS3
@@ -318,6 +324,7 @@ long map (long valor, long minsensor, long limsup, long out_min, long out_max) {
 }
 
 	
+
 void initSole(){
 	initColumns();
 	initRows();

@@ -17,4 +17,4 @@
  uint32_t ADC0_InSeq3(void);
  long map (long valor, long minsensor, long limsup,long out_min, long out_max);
  #endif 
- 
+
