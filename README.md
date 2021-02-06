@@ -4,4 +4,4 @@
 
 # Block Diagram (FALL 2020)
  
- <img src = "Images/SmartSoleBlockDiagram4.jpg" width= "500" >
+ <img src = "Images/SmartSoleBlockDiagramDemo1.jpg" width= "500" >
