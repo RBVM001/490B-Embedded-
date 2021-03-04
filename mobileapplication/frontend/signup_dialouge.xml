@@ -3,35 +3,57 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Account,"
+        android:textColor="@color/colorAccent"
+        android:layout_marginLeft="8dp"
+        android:textSize="18dp"
+        android:fontFamily="@font/poppinsbold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign up to get started!"
+        android:fontFamily="@font/poppinsmedium"
+        android:textSize="11dp"
+        android:layout_marginLeft="8dp"/>
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:hint="First name"
+        android:hint="Full name"
+        android:drawableRight="@drawable/ic_baseline_perm_contact_calendar_24"
         android:id="@+id/firstEdit"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:hint="Last name"
-        android:id="@+id/lastEdit"/>
+        android:hint="Username"
+        android:drawableRight="@drawable/ic_baseline_person_24"
+        android:id="@+id/usernameEdit"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:hint="Email address"
-        android:id="@+id/emailEdit"/>
+        android:hint="Email"
+        android:id="@+id/emailEdit"
+        android:drawableRight="@drawable/ic_baseline_alternate_email_24"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:hint="Enter Password"
+        android:drawableRight="@drawable/ic_baseline_lock_24"
         android:id="@+id/passwordEdit"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:text="Sign up"
+        android:text="Register"
+        android:background="@drawable/button_signup"
+        android:textColor="#FFFFFF"
         android:id="@+id/signup" />
 
 
