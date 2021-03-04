@@ -1,13 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.PlaceholderFragment">
+    tools:context=".ui.main.PlaceholderFragment"
+    android:background="#FFFFFF">
+        <!--    android:background="#CCCCCC">-->
 
-    <RelativeLayout
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="wrap_content"
+            android:layout_height="180dp"
+            android:layout_marginTop="80dp"
+            android:includeFontPadding="false"
+            android:padding="20dp"
+            android:src="@drawable/profilepicture_circle" />
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="250dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_vertical"
+            android:text="Chad Y"
+            android:textSize="35dp"
+            android:textColor="#000000"/>
+        <TextView
+            android:id="@+id/alltime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="290dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical"
+            android:textSize="17dp"
+            android:text="all time"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="320dp"
+            android:layout_marginLeft="15dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="0.4"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text="Calories:"
+                    android:textColor="#000000" />
+                <EditText
+                    android:id="@+id/burnedCal"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1.0"
+                    android:background="#CCCCCC"
+                    android:hint="Calories Burned"
+                    android:imeOptions="actionNext"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textColor="#FFFFFF" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.4"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="30dp"
+                    android:text="kCal"
+                    android:textColor="#000000" />
+                ></LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="380dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="15dp"
+            android:weightSum="2" >
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="0.4"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="Distance:"
+                    android:textColor="#000000" />
+                <EditText
+                    android:id="@+id/traveledDist"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1.0"
+                    android:background="#CCCCCC"
+                    android:hint="Distance Traveled"
+                    android:imeOptions="actionNext"
+                    android:paddingStart="10dp"
+                    android:singleLine="true"
+                    android:textColor="#FFFFFF"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.4"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="30dp"
+                    android:text="miles"
+                    android:textColor="#000000" />
+                ></LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="440dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="15dp"
+            android:weightSum="2" >
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="0.4"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text="Steps"
+                    android:textColor="#000000" />
+                <EditText
+                    android:id="@+id/Steps"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1.0"
+                    android:background="#CCCCCC"
+                    android:hint="Steps Taken:"
+                    android:imeOptions="actionNext"
+                    android:paddingStart="10dp"
+                    android:singleLine="true"
+                    android:textColor="#FFFFFF"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.4"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="30dp"
+                    android:text="steps"
+                    android:textColor="#000000" />
+                ></LinearLayout>
+
+<!--    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="#CCCCCC"
@@ -15,9 +157,10 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="-1dp"
         tools:ignore="MissingConstraints">
-        <LinearLayout
+&lt;!&ndash;        <LinearLayout
+            android:background="#FFFFFF"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="350dp" />&ndash;&gt;
         <ImageView
             android:id="@+id/profile_image"
             android:layout_width="wrap_content"
@@ -26,7 +169,7 @@
             android:layout_below="@id/profileText"
             android:layout_centerHorizontal="true"
             android:includeFontPadding="false"
-            android:src="@drawable/profile_picture" />
+            android:src="@drawable/profilepicture_circle" />
 
         <ImageView
             android:id="@+id/rectanglebottom"
@@ -123,6 +266,6 @@
             android:layout_height="match_parent"
             ></ScrollView>
 
-    </RelativeLayout>
+    </RelativeLayout>-->
 
-</ScrollView>
+</RelativeLayout>
