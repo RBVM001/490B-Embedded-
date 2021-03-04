@@ -7,4 +7,15 @@ public class LoginResult {
     private String last;
     private String email;
 
+    public String getFirst() {
+        return first;
+    }
+
+    public String getLast() {
+        return last;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }
