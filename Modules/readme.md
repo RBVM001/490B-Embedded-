@@ -1,7 +1,7 @@
 # MODULE FOLDER
 The following folder includes the necessary files for the modules of the embedded systems portion. 
-# Fall 2020 Block Diagram (latest)
-![alt text](https://github.com/SnrNotHere16/490B-Embedded-/blob/main/Images/SmartSoleBlockDiagramDemo1.jpg)
+# Fall 2021 Block Diagram (latest)
+![alt text](https://github.com/RBVM001/490B-Embedded-/blob/main/Images/SmartSoleBlockDiagramFinal.png)
 # What to include in each folder? 
  1. The code <br/>
      a. include any code used to test or study the modules functionality 
