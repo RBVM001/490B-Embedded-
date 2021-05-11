@@ -1,0 +1,10 @@
+.\storage.o: Storage.c
+.\storage.o: Storage.h
+.\storage.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\storage.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+.\storage.o: C:\Keil\ARM\ARMCC\bin\..\include\stdbool.h
+.\storage.o: diskio.h
+.\storage.o: integer.h
+.\storage.o: ff.h
+.\storage.o: ffconf.h
+.\storage.o: tm4c123gh6pm.h

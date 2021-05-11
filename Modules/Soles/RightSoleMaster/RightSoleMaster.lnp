@@ -1,0 +1,13 @@
+--cpu Cortex-M4
+".\init.o"
+".\main.o"
+".\sender.o"
+".\startup.o"
+".\pll.o"
+".\diskio.o"
+".\ff.o"
+".\storage.o"
+".\master.o"
+--ro-base 0x00000000 --entry 0x00000000 --rw-base 0x20000000 --entry Reset_Handler --first __Vectors --strict --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\RightSoleMaster.map" -o .\RightSoleMaster.axf
