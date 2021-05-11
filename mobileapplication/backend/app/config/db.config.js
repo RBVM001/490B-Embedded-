@@ -1,7 +1,7 @@
 module.exports = {
 	HOST: "localhost",
 	USER: "root",
-	PASSWORD: "$pR1T395521",
-	DB: "steps_tb",
+	PASSWORD: "Onion",
+	DB: "soleidarity",
 	dialect: "mysql"
 };
